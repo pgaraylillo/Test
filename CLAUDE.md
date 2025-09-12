@@ -19,7 +19,8 @@ pip3 install -r requirements.txt
 ```bash
 # Development server
 python main.py
-# Runs on http://localhost:5001 with debug=True
+# Runs on http://localhost:5000 with debug=True (port 5000 is default)
+# The app is configured to run on host="0.0.0.0" for deployment compatibility
 ```
 
 ### Production Deployment
@@ -27,6 +28,7 @@ The app is configured for production deployment with:
 - Gunicorn WSGI server (included in requirements.txt)
 - PostgreSQL support via psycopg2-binary
 - Environment variable configuration for secrets
+- Procfile configured for Heroku deployment (`web: gunicorn main:app`)
 
 ## Architecture
 
@@ -55,7 +57,9 @@ The application uses SQLAlchemy with three main models:
 - `DB_URI`: Database connection string (defaults to SQLite if not set)
 
 ### Important Notes
-- Admin functionality is restricted to user with ID 1
-- Database tables are auto-created on first run
+- Admin functionality is restricted to user with ID 1 (first registered user becomes admin)
+- The `@admin_only` decorator in main.py:118 enforces admin-only routes
+- Database tables are auto-created on first run via `db.create_all()`
 - The app supports both SQLite (development) and PostgreSQL (production)
 - User passwords are hashed using PBKDF2 with SHA-256
+- Edit post route (line 242) is missing the `@admin_only` decorator

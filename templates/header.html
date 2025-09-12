@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Angela's Blog</title>
+    <meta name="description" content="Blog de Pablo Garay sobre avances de Inteligencia Artificial en Medicina y Anestesiología" />
+    <meta name="author" content="Dr. Pablo Garay" />
+    <title>Dr. Pablo Garay - IA en Medicina</title>
     {% block styles %}
     <!-- Load Bootstrap-Flask CSS here -->
     {{ bootstrap.load_css() }}
@@ -44,7 +44,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
       <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="/">Start Bootstrap</a>
+        <a class="navbar-brand" href="/">Dr. Pablo Garay</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -63,7 +63,7 @@
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
                 href="{{ url_for('get_all_posts') }}"
-                >Home</a
+                >Inicio</a
               >
             </li>
             <!-- Only show Login/Register if user is logged out. Otherwise show "Log Out" -->
@@ -72,14 +72,14 @@
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
                 href="{{ url_for('login') }}"
-                >Login</a
+                >Iniciar Sesión</a
               >
             </li>
             <li class="nav-item">
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
                 href="{{ url_for('register') }}"
-                >Register</a
+                >Registrarse</a
               >
             </li>
             {% else: %}
@@ -87,7 +87,7 @@
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
                 href="{{ url_for('logout') }}"
-                >Log Out</a
+                >Cerrar Sesión</a
               >
             </li>
             {% endif %}
@@ -95,14 +95,14 @@
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
                 href="{{ url_for('about') }}"
-                >About</a
+                >Acerca de</a
               >
             </li>
             <li class="nav-item">
               <a
                 class="nav-link px-lg-3 py-3 py-lg-4"
                 href="{{ url_for('contact') }}"
-                >Contact</a
+                >Contacto</a
               >
             </li>
           </ul>

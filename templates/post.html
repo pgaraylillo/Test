@@ -9,11 +9,16 @@
         <div class="post-heading">
           <h1>{{ post.title }}</h1>
           <h2 class="subheading">{{ post.subtitle }}</h2>
-          <span class="meta"
-            >Posted by
-            <!-- Changed from post.author -->
-            <a href="#">{{ post.author.name }}</a>
-            on {{ post.date }}
+          <span class="meta">
+            Publicado por
+            <a href="#" class="text-white text-decoration-none">
+              <strong>{{ post.author.name }}</strong>
+            </a>
+            el {{ post.date }}
+            <!-- Categoría si existe -->
+            {% if post.category %}
+            <br><span class="badge bg-light text-dark mt-2">{{ post.category|title }}</span>
+            {% endif %}
           </span>
         </div>
       </div>
@@ -26,47 +31,214 @@
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        {{ post.body|safe }}
+
+        <!-- Content -->
+        <div class="post-content">
+          {{ post.body|safe }}
+        </div>
+
+        <!-- Social sharing section -->
+        <div class="mt-4 pt-4 border-top">
+          <h5><i class="fas fa-share-alt me-2"></i>Comparte este artículo:</h5>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ post.title }}"
+               target="_blank" class="btn btn-outline-info btn-sm">
+              <i class="fab fa-twitter me-1"></i>Twitter
+            </a>
+            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}"
+               target="_blank" class="btn btn-outline-primary btn-sm">
+              <i class="fab fa-linkedin me-1"></i>LinkedIn
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}"
+               target="_blank" class="btn btn-outline-primary btn-sm">
+              <i class="fab fa-facebook me-1"></i>Facebook
+            </a>
+            <button onclick="copyToClipboard()" class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-link me-1"></i>Copiar enlace
+            </button>
+          </div>
+        </div>
+
         <!--Only show Edit Post button if user id is 1 (admin user) -->
         {% if current_user.id == 1 %}
-        <div class="d-flex justify-content-end mb-4">
-          <a
-            class="btn btn-primary float-right"
-            href="{{url_for('edit_post', post_id=post.id)}}"
-            >Edit Post</a
-          >
+        <div class="d-flex justify-content-between mb-4 mt-4 pt-3 border-top">
+          <a class="btn btn-warning" href="{{url_for('edit_post', post_id=post.id)}}">
+            <i class="fas fa-edit me-2"></i>Editar Post
+          </a>
+          <a class="btn btn-danger" href="{{url_for('delete_post', post_id=post.id)}}"
+             onclick="return confirm('¿Estás seguro de que quieres eliminar este post?')">
+            <i class="fas fa-trash me-2"></i>Eliminar Post
+          </a>
         </div>
         {% endif %}
 
-        <!-- Comments Area -->
-        <!-- Load the CKEditor -->
-        {{ ckeditor.load() }}
-        <!-- Configure it with the name of the form field from CommentForm -->
-        {{ ckeditor.config(name='comment_text') }}
-        <!-- Create the wtf quick form from CommentForm -->
-        {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
-        <div class="comment">
-          <ul class="commentList">
-            <!-- Show all comments -->
-            {% for comment in post.comments: %}
-            <li>
-              <div class="commenterImage">
-                <img
-                  src="{{ comment.comment_author.email | gravatar }}"
-                />
-              </div>
-              <div class="commentText">
-                {{comment.text|safe}}
-                <span class="sub-text">{{comment.comment_author.name}}</span>
-              </div>
-            </li>
-            {% endfor %}
-          </ul>
+        <!-- Comments Section -->
+        <div class="comments-section mt-5">
+          <h3 class="mb-4">
+            <i class="fas fa-comments me-2"></i>
+            Comentarios
+            <span class="badge bg-secondary">{{ post.comments|length }}</span>
+          </h3>
 
+          <!-- Add Comment Form -->
+          <div class="add-comment mb-5">
+            {% if current_user.is_authenticated %}
+              <div class="card">
+                <div class="card-header bg-light">
+                  <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>Añadir Comentario
+                  </h5>
+                </div>
+                <div class="card-body">
+                  {{ ckeditor.load() }}
+                  {{ ckeditor.config(name='comment_text') }}
+                  {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+                </div>
+              </div>
+            {% else %}
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>¿Quieres comentar?</strong>
+                <a href="{{ url_for('login') }}" class="alert-link">Inicia sesión</a>
+                o
+                <a href="{{ url_for('register') }}" class="alert-link">regístrate</a>
+                para participar en la discusión.
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Flash messages for comments -->
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle me-2"></i>{{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+          {% endif %}
+          {% endwith %}
+
+          <!-- Comments List -->
+          <div class="comments-list">
+            {% if post.comments %}
+              {% for comment in post.comments %}
+              <div class="comment-item border rounded p-3 mb-3 bg-light">
+                <div class="d-flex">
+                  <div class="comment-avatar me-3">
+                    <img src="{{ comment.comment_author.email | gravatar }}"
+                         class="rounded-circle" width="50" height="50"
+                         alt="Avatar de {{ comment.comment_author.name }}">
+                  </div>
+                  <div class="comment-content flex-grow-1">
+                    <div class="comment-header mb-2">
+                      <strong class="text-primary">{{ comment.comment_author.name }}</strong>
+                      <small class="text-muted ms-2">
+                        <i class="fas fa-clock me-1"></i>
+                        <!-- Aquí podrías añadir fecha del comentario si la tienes -->
+                        Comentario #{{ loop.index }}
+                      </small>
+                    </div>
+                    <div class="comment-text">
+                      {{ comment.text|safe }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4">
+                <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                <p class="text-muted">
+                  Aún no hay comentarios. ¡Sé el primero en comentar este artículo!
+                </p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Navigation to other posts -->
+        <div class="mt-5 pt-4 border-top">
+          <div class="row">
+            <div class="col-6">
+              <a href="{{ url_for('get_all_posts') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Volver al inicio
+              </a>
+            </div>
+            <div class="col-6 text-end">
+              <!-- Aquí podrías añadir links a posts anteriores/siguientes -->
+              <span class="text-muted">
+                <i class="fas fa-eye me-1"></i>Artículo visto
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </article>
+
+<!-- Scripts for functionality -->
+<script>
+function copyToClipboard() {
+  navigator.clipboard.writeText(window.location.href).then(function() {
+    // Create a temporary alert
+    const originalBtn = event.target.closest('button');
+    const originalHTML = originalBtn.innerHTML;
+    originalBtn.innerHTML = '<i class="fas fa-check me-1"></i>¡Copiado!';
+    originalBtn.classList.remove('btn-outline-secondary');
+    originalBtn.classList.add('btn-success');
+
+    setTimeout(() => {
+      originalBtn.innerHTML = originalHTML;
+      originalBtn.classList.remove('btn-success');
+      originalBtn.classList.add('btn-outline-secondary');
+    }, 2000);
+  });
+}
+
+// Add some smooth scrolling for comment navigation
+document.addEventListener('DOMContentLoaded', function() {
+  // If there's a hash in the URL, scroll to it smoothly
+  if (window.location.hash) {
+    const element = document.querySelector(window.location.hash);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+});
+</script>
+
+<style>
+.post-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.post-content p {
+  margin-bottom: 1.5rem;
+}
+
+.comment-item {
+  transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.comments-section {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 2rem;
+  margin-top: 3rem;
+}
+
+.add-comment .card {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+</style>
 
 {% include "footer.html" %}

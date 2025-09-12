@@ -10,11 +10,12 @@
       <div class="col-md-10 col-lg-8 col-xl-7">
         <div class="page-heading">
           {% if msg_sent: %}
-          <h1>Successfully sent your message</h1>
+          <h1>Mensaje Enviado</h1>
+          <span class="subheading">¡Gracias por contactarme! Te responderé pronto.</span>
           {% else: %}
-          <h1>Contact Me</h1>
+          <h1>Contacto</h1>
+          <span class="subheading">¿Tienes alguna consulta sobre IA en Medicina?</span>
           {% endif %}
-          <span class="subheading">Have questions? I have answers.</span>
         </div>
       </div>
     </div>
@@ -25,76 +26,190 @@
   <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
       <div class="col-md-10 col-lg-8 col-xl-7">
-        <p>
-          Want to get in touch? Fill out the form below to send me a message and
-          I will get back to you as soon as possible!
+
+        {% if not msg_sent: %}
+        <!-- Información de contacto -->
+        <div class="row mb-5">
+          <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-envelope me-2"></i>¡Conectemos!</h2>
+            <p class="lead">
+              Me encanta escuchar de colegas médicos, investigadores, estudiantes y cualquier persona interesada en el fascinante mundo de la inteligencia artificial aplicada a la medicina.
+            </p>
+          </div>
+        </div>
+
+        <!-- Razones para contactar -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h3 class="mb-3"><i class="fas fa-comments me-2"></i>¿Cuándo contactarme?</h3>
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="list-unstyled">
+                  <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Compartir noticias relevantes de IA en salud</li>
+                  <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Proponer colaboraciones</li>
+                  <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Consultas sobre anestesiología e IA</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <ul class="list-unstyled">
+                  <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Invitaciones a conferencias</li>
+                  <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Feedback sobre el blog</li>
+                  <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Intercambio de ideas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <p class="{% if not msg_sent %}mb-4{% else %}mb-2{% endif %}">
+          {% if not msg_sent %}
+          Completa el formulario a continuación y me pondré en contacto contigo lo antes posible. Valoro cada mensaje y haré mi mejor esfuerzo por responder de manera oportuna.
+          {% else %}
+          He recibido tu mensaje y te responderé pronto. ¡Gracias por tu interés en la IA aplicada a la medicina!
+          {% endif %}
         </p>
+
+        {% if not msg_sent %}
         <div class="my-5">
-          <!-- * * * * * * * * * * * * * * *-->
-          <!-- * * Simplified SB Contact Form for the Tutorial* *-->
+          <!-- Contact Form -->
           <form
             id="contactForm"
             name="sentMessage"
             action="{{ url_for('contact') }}"
             method="post"
+            class="needs-validation"
+            novalidate
           >
-            <div class="form-floating">
+            <div class="form-floating mb-3">
               <input
                 class="form-control"
                 id="name"
                 name="name"
                 type="text"
-                placeholder="Enter your name..."
+                placeholder="Tu nombre completo..."
                 required
               />
-              <label for="name">Name</label>
+              <label for="name"><i class="fas fa-user me-2"></i>Nombre Completo</label>
+              <div class="invalid-feedback">
+                Por favor, ingresa tu nombre.
+              </div>
             </div>
-            <div class="form-floating">
+
+            <div class="form-floating mb-3">
               <input
                 class="form-control"
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Enter your email..."
+                placeholder="tu.email@ejemplo.com..."
                 required
               />
-              <label for="email">Email address</label>
+              <label for="email"><i class="fas fa-envelope me-2"></i>Dirección de Email</label>
+              <div class="invalid-feedback">
+                Por favor, ingresa un email válido.
+              </div>
             </div>
-            <div class="form-floating">
+
+            <div class="form-floating mb-3">
               <input
                 class="form-control"
                 id="phone"
                 name="phone"
                 type="tel"
-                placeholder="Enter your phone number..."
+                placeholder="Tu número de teléfono..."
                 required
               />
-              <label for="phone">Phone Number</label>
+              <label for="phone"><i class="fas fa-phone me-2"></i>Teléfono (opcional)</label>
             </div>
-            <div class="form-floating">
+
+            <div class="form-floating mb-3">
+              <select class="form-control" id="subject" name="subject" required>
+                <option value="">Selecciona un tema...</option>
+                <option value="consulta-general">Consulta General</option>
+                <option value="compartir-noticia">Compartir Noticia de IA</option>
+                <option value="colaboracion">Propuesta de Colaboración</option>
+                <option value="conferencia">Invitación a Conferencia</option>
+                <option value="feedback">Feedback del Blog</option>
+                <option value="otro">Otro</option>
+              </select>
+              <label for="subject"><i class="fas fa-tag me-2"></i>Tema de Consulta</label>
+            </div>
+
+            <div class="form-floating mb-3">
               <textarea
                 class="form-control"
                 id="message"
                 name="message"
-                placeholder="Enter your message here..."
+                placeholder="Escribe tu mensaje aquí..."
                 required
                 style="height: 12rem"
               ></textarea>
-              <label for="message">Message</label>
+              <label for="message"><i class="fas fa-comment me-2"></i>Tu Mensaje</label>
+              <div class="invalid-feedback">
+                Por favor, escribe tu mensaje.
+              </div>
             </div>
-            <br />
-            <button
-              class="btn btn-primary text-uppercase"
-              id="submitButton"
-              type="submit"
-            >
-              Send
-            </button>
+
+            <div class="mb-3">
+              <small class="text-muted">
+                <i class="fas fa-info-circle me-1"></i>
+                Todos los campos marcados son obligatorios. Tu información será tratada de forma confidencial.
+              </small>
+            </div>
+
+            <div class="d-grid">
+              <button
+                class="btn btn-primary btn-lg"
+                id="submitButton"
+                type="submit"
+              >
+                <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+              </button>
+            </div>
           </form>
         </div>
+
+        <!-- Redes sociales -->
+        <div class="row mt-5">
+          <div class="col-12">
+            <h3 class="mb-3"><i class="fas fa-share-alt me-2"></i>También puedes seguirme en:</h3>
+            <div class="text-center">
+              <a href="#" class="btn btn-outline-primary me-2 mb-2">
+                <i class="fab fa-linkedin me-1"></i>LinkedIn
+              </a>
+              <a href="#" class="btn btn-outline-info me-2 mb-2">
+                <i class="fab fa-twitter me-1"></i>Twitter
+              </a>
+              <a href="#" class="btn btn-outline-success me-2 mb-2">
+                <i class="fab fa-researchgate me-1"></i>ResearchGate
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
 </main>
+
+<script>
+// Bootstrap form validation
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
 
 {% include "footer.html" %}
